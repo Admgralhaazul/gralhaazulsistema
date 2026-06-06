@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gralha Azul — Plataforma Integrada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#0b1220;overflow:hidden;height:100vh;width:100vw;}
+#navbar{position:fixed;top:0;left:0;right:0;height:48px;background:rgba(11,18,32,0.98);border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;z-index:999999;padding:0 20px;gap:0;}
+.nav-logo{display:flex;align-items:center;gap:10px;padding-right:20px;margin-right:8px;border-right:1px solid rgba(255,255,255,0.08);flex-shrink:0;}
+.nav-logo-icon{width:28px;height:28px;background:#1e3a5f;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.nav-logo-name{font-size:12.5px;font-weight:600;color:#e2e8f0;}
+.nav-logo-sub{font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:0.8px;text-transform:uppercase;}
+.nav-tabs{display:flex;align-items:stretch;height:48px;margin-left:4px;}
+.nav-tab{display:flex;align-items:center;gap:9px;padding:0 22px;height:100%;font-size:12.5px;font-weight:500;color:rgba(255,255,255,0.38);cursor:pointer;border-bottom:2px solid transparent;border-top:2px solid transparent;transition:all 0.18s;user-select:none;flex-shrink:0;}
+.nav-tab:hover{color:rgba(255,255,255,0.72);background:rgba(255,255,255,0.03);}
+.nav-tab.act-r{color:#fff;border-bottom-color:#e8720c;background:rgba(232,114,12,0.05);}
+.nav-tab.act-g{color:#fff;border-bottom-color:#4f8ef7;background:rgba(79,142,247,0.05);}
+.tab-icon{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.act-r .tab-icon{background:rgba(232,114,12,0.2);}
+.act-g .tab-icon{background:rgba(79,142,247,0.2);}
+.nav-tab:not(.act-r):not(.act-g) .tab-icon{background:rgba(255,255,255,0.06);}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,0.07);margin:0 4px;align-self:center;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.nav-status{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.28);}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,0.2);}
+.app-frame{position:fixed;top:48px;left:0;right:0;bottom:0;width:100%;height:calc(100vh - 48px);border:none;display:none;opacity:0;transition:opacity 0.18s ease;}
+.app-frame.visible{display:block;opacity:1;}
+#loading{position:fixed;inset:0;background:#0b1220;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999998;gap:16px;transition:opacity 0.4s ease;}
+#loading.hidden{opacity:0;pointer-events:none;}
+.loading-logo{width:52px;height:52px;background:#1e3a5f;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.loading-name{font-size:18px;font-weight:600;color:#e2e8f0;}
+.loading-sub{font-size:12px;color:rgba(255,255,255,0.28);}
+.loading-bar-wrap{width:180px;height:2px;background:rgba(255,255,255,0.07);border-radius:1px;margin-top:8px;}
+.loading-bar{height:100%;width:0%;background:linear-gradient(90deg,#e8720c,#4f8ef7);border-radius:1px;transition:width 0.3s ease;}
+</style>
+</head>
+<body>
+<div id="loading">
+  <div class="loading-logo">🦜</div>
+  <div class="loading-name">Gralha Azul</div>
+  <div class="loading-sub">Carregando plataforma...</div>
+  <div class="loading-bar-wrap"><div class="loading-bar" id="lbar"></div></div>
+</div>
+<div id="navbar">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🦜</div>
+    <div>
+      <div class="nav-logo-name">Gralha Azul</div>
+      <div class="nav-logo-sub">Plataforma Integrada</div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab act-r" id="tab-r" onclick="sw('r')">
+      <div class="tab-icon">📋</div>
+      <span>Rescisões</span>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-tab" id="tab-g" onclick="sw('g')">
+      <div class="tab-icon">🏢</div>
+      <span>Gestão Administrativa</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      <span>Online</span>
+    </div>
+  </div>
+</div>
+<iframe id="fr-r" class="app-frame" src="rescisoes.html"></iframe>
+<iframe id="fr-g" class="app-frame" src="gestao.html"></iframe>
+<script>
+var cur='r';
+function sw(which){
+  if(cur===which)return;
+  var prev=cur;cur=which;
+  var old=document.getElementById('fr-'+prev);
+  var nw=document.getElementById('fr-'+which);
+  old.style.opacity='0';
+  setTimeout(function(){old.style.display='none';nw.style.display='block';requestAnimationFrame(function(){nw.style.opacity='1';});},160);
+  ['r','g'].forEach(function(k){document.getElementById('tab-'+k).className='nav-tab'+(k===which?' act-'+which:'');});
+  try{localStorage.setItem('ga_tab',which);}catch(e){}
+}
+var bar=document.getElementById('lbar');
+var pct=0;
+var iv=setInterval(function(){pct+=Math.random()*18+5;if(pct>=90){pct=90;clearInterval(iv);}bar.style.width=Math.min(pct,90)+'%';},180);
+window.addEventListener('load',function(){
+  bar.style.width='100%';
+  setTimeout(function(){var ld=document.getElementById('loading');ld.classList.add('hidden');setTimeout(function(){ld.style.display='none';},400);},300);
+});
+(function(){
+  var t='r';try{t=localStorage.getItem('ga_tab')||'r';}catch(e){}
+  if(t!=='r'){cur='r';sw(t);}
+  else{document.getElementById('fr-r').style.display='block';document.getElementById('fr-r').style.opacity='1';}
+})();
+</script>
+</body>
+</html>
